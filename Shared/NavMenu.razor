@@ -1,5 +1,5 @@
 ﻿<Sidebar @ref="sidebar"
-         IconName="IconName.BootstrapFill"
+         IconName="IconName.Easel2Fill"
          Title="จัดการตารางเรียน"
          BadgeText="v2.1.0"
          DataProvider="SidebarDataProvider" />
@@ -20,9 +20,9 @@
     {
         navItems = new List<NavItem>
         {
-            new NavItem { Href = "/ViewTable", IconName = IconName.CheckCircleFill, Text = "ดูตารางเรียน"},
-            new NavItem { Href = "/CrateTable", IconName = IconName.HouseDoorFill, Text = "สร้างตารางเรียน"},
-            new NavItem { Href = "/Help", IconName = IconName.LayoutSidebarInset, Text = "คู่มือการใช้"},
+            new NavItem { Href = "/ViewTable", IconName = IconName.Calendar2Range, Text = "ดูตารางเรียน"},
+            new NavItem { Href = "/CreateTable", IconName = IconName.CalendarPlus, Text = "สร้างตารางเรียน"},
+            new NavItem { Href = "/Help", IconName = IconName.InfoCircleFill, Text = "คู่มือการใช้"},
         };
         return navItems;
     }
