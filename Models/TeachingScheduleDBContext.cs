@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace TeachingSchedule.Models
 {
@@ -31,9 +34,10 @@ namespace TeachingSchedule.Models
         {
             modelBuilder.Entity<Class>(entity =>
             {
-                entity.HasKey(e => e.IdClass);
+                entity.HasKey(e => e.IdClass)
+                    .HasName("PK_class");
 
-                entity.ToTable("class");
+                entity.ToTable("Class");
 
                 entity.Property(e => e.IdClass)
                     .HasMaxLength(10)
@@ -79,6 +83,8 @@ namespace TeachingSchedule.Models
                 entity.ToTable("Subject");
 
                 entity.Property(e => e.IdSubject).HasColumnName("id_subject");
+
+                entity.Property(e => e.AmountSubject).HasColumnName("amount_subject");
 
                 entity.Property(e => e.NameSubject)
                     .HasMaxLength(50)

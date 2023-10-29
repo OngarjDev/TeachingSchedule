@@ -1,4 +1,7 @@
-﻿namespace TeachingSchedule.Models
+﻿using System;
+using System.Collections.Generic;
+
+namespace TeachingSchedule.Models
 {
     public partial class Room
     {
