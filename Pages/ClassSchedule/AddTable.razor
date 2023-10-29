@@ -1,0 +1,92 @@
+﻿@page "/CreateTable"
+
+<PageTitle>เพิ่มข้อมูล/สร้างตาราง</PageTitle>
+
+<div class="container m-0 p-3">
+    <div class="row">
+        <div class="col-xl-3 col-lg-4">
+            <Card>
+                <CardBody>
+                    <h3>วิชาเรียน</h3>
+                    <div class="input-group">
+                        <Dropdown Class="w-100">
+                            <DropdownToggleButton Class=" border border-black" Color="ButtonColor.Light" Size="Size.ExtraLarge">โปรดเลือกวิชาเรียน</DropdownToggleButton>
+                            <DropdownMenu>
+                                <DropdownItem To="#" Type="ButtonType.Link">สมศรี</DropdownItem>
+                                <hr />
+                                <DropdownItem To="#" Type="ButtonType.Link" Disabled="true">หากไม่มีข้อมูลโปรดเพิ่มข้อมูลก่อน</DropdownItem>
+                            </DropdownMenu>
+                        </Dropdown>
+                        <Button Class="w-100 mt-2" Color="ButtonColor.Primary"><Icon Name="IconName.PlusLg"></Icon> เพิ่มวิชาเรียน</Button>
+                    </div>
+                </CardBody>
+            </Card>
+        </div>
+        <div class="col-xl-3 col-lg-4">
+            <Card>
+                <CardBody>
+            <h3>คุณครู</h3>
+            <div class="input-group">
+                <Dropdown Class="w-100">
+                    <DropdownToggleButton Class=" border border-black" Color="ButtonColor.Light" Size="Size.ExtraLarge">โปรดเลือกคุณครูผู้สอน</DropdownToggleButton>
+                    <DropdownMenu>
+                        <DropdownItem To="#" Type="ButtonType.Link">สมศรี</DropdownItem>
+                        <hr />
+                        <DropdownItem To="#" Type="ButtonType.Link" Disabled="true">หากไม่มีข้อมูลโปรดเพิ่มข้อมูลก่อน</DropdownItem>
+                    </DropdownMenu>
+                </Dropdown>
+
+                <Button Class="w-100 mt-2" Color="ButtonColor.Primary"><Icon Name="IconName.PlusLg"></Icon> เพิ่มรายชื่อคุณครู</Button>
+            </div>
+            </CardBody>
+            </Card>
+        </div>
+        <div class="col-xl-3 col-lg-4">
+            <Card>
+                <CardBody>
+                    <h3>ห้องเรียน</h3>
+                    <div class="input-group">
+                        <Dropdown Class="w-100">
+                            <DropdownToggleButton Class=" border border-black" Color="ButtonColor.Light" Size="Size.ExtraLarge">โปรดเลือกรายการ</DropdownToggleButton>
+                            <DropdownMenu>
+                                <DropdownItem To="#" Type="ButtonType.Link">สมศรี</DropdownItem>
+                                <hr />
+                                <DropdownItem To="#" Type="ButtonType.Link" Disabled="true">หากไม่มีข้อมูลโปรดเพิ่มข้อมูลก่อน</DropdownItem>
+                            </DropdownMenu>
+                        </Dropdown>
+                        <Button Class="w-100 mt-2" Color="ButtonColor.Primary"><Icon Name="IconName.PlusLg"></Icon> เพิ่มห้องเรียน</Button>
+                    </div>
+                </CardBody>
+            </Card>
+        </div>
+        <div class="col-xl-3 col-lg-4">
+            <Card>
+                <CardBody>
+                    <h3>ชั้นเรียน</h3>
+                    <div class="input-group">
+                        <Dropdown Class="w-100">
+                            <DropdownToggleButton Class=" border border-black" Color="ButtonColor.Light" Size="Size.ExtraLarge">โปรดเลือกห้องที่จะสอน</DropdownToggleButton>
+                            <DropdownMenu>
+                                <DropdownItem To="#" Type="ButtonType.Link">สมศรี</DropdownItem>
+                                <hr />
+                                <DropdownItem To="#" Type="ButtonType.Link" Disabled="true">หากไม่มีข้อมูลโปรดเพิ่มข้อมูลก่อน</DropdownItem>
+                            </DropdownMenu>
+                        </Dropdown>
+                        <Button Class="w-100 mt-2" Color="ButtonColor.Primary"><Icon Name="IconName.PlusLg"></Icon> เพิ่มชั้นเรียน</Button>
+                    </div>
+                </CardBody>
+            </Card>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <Tooltip Class="me-4" Title="ระบบจะสร้างตารางสุ่มขึ้นมา ตามข้อมูลที่เกี่ยวข้องกรณีห้องเรียน,ครู,วิชาเรียน ไม่พอระบบจะมีตัวเลือก 2 ทางคือ 1.คัดเลือกครูตัวแทน(ที่ว่าง) 2.ยกเลิกชั้นเรียน ศึกษาข้อมูลเพิ่มเติมได้ที่คู่มือการใช้">
+        <Switch @bind-Value="AutoCrateTable" Label="อนุญาต สุ่มตารางเรียนตามวิชาเอกอาจารย์,วิชาที่ชั้นเรียนนั้นต้องเรียน,ห้องเรียนประจำชั้น" />
+        </Tooltip>
+        <Button Class="w-100 mt-3" Color="ButtonColor.Success"> สร้างตารางสอน </Button>
+    </div>
+</div>
+<hr />
+<TableViewComponent/>
+@code{
+    public bool AutoCrateTable { get; set; }
+}
