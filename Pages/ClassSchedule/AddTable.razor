@@ -1,7 +1,6 @@
 ﻿@page "/CreateTable"
 
 <PageTitle>เพิ่มข้อมูล/สร้างตาราง</PageTitle>
-
 <div class="container m-0 p-3">
     <div class="row">
         <div class="col-xl-3 col-lg-4">
@@ -17,7 +16,7 @@
                                 <DropdownItem To="#" Type="ButtonType.Link" Disabled="true">หากไม่มีข้อมูลโปรดเพิ่มข้อมูลก่อน</DropdownItem>
                             </DropdownMenu>
                         </Dropdown>
-                        <Button Class="w-100 mt-2" Color="ButtonColor.Primary"><Icon Name="IconName.PlusLg"></Icon> เพิ่มวิชาเรียน</Button>
+                        <Button Class="w-100 mt-2" Color="ButtonColor.Primary" @onclick="OnAddSubject"><Icon Name="IconName.PlusLg"></Icon> เพิ่มวิชาเรียน</Button>
                     </div>
                 </CardBody>
             </Card>
@@ -87,6 +86,38 @@
 </div>
 <hr />
 <TableViewComponent/>
+
+
+<Modal @ref="modal" title="ฟอร์มเพิ่มข้อมูล">
+    <BodyTemplate>
+        <div class="mb-3">
+            <label class="form-label">Amount</label>
+            <NumberInput TValue="int" @bind-Value="@amount" Placeholder="Enter amount" />
+        </div>
+        <div class="mb-3">Entered Amount: @amount</div>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick">ยกเลิก</Button>
+        <Button Color="ButtonColor.Primary">ดำเนินการต่อ</Button>
+    </FooterTemplate>
+</Modal>
 @code{
+    private Modal modal = default!;
+    private int amount;
     public bool AutoCrateTable { get; set; }
+
+    private async Task OnShowModalClick()
+    {
+        await modal.ShowAsync();
+    }
+
+    private async Task OnHideModalClick()
+    {
+        await modal.HideAsync();
+    }
+    public async Task OnAddSubject()
+    {
+        string Detail = "";
+        await OnShowModalClick();
+    }
 }
