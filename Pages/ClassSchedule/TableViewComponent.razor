@@ -1,10 +1,18 @@
-﻿
+﻿@using System.Text.Json;
+@using TeachingSchedule.Models;
+@using TeachingSchedule.Services;
+@inject IJSRuntime _Js;
+@inject PeriodClassService _PeriodService;
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
 <h3 class="text-center">ตารางเรียนระดับชั้น: </h3>
 <table class="table table-bordered border-primary text-center">
     <thead>
         <tr>
             <th scope="col">วัน/เวลา</th>
-            <th scope="col">First</th>
+            @foreach (var Time in Period)
+            {
+                <h1>sdadsaad1</h1>
+            }
         </tr>
     </thead>
     <tbody>
@@ -30,3 +38,21 @@
         </tr>
     </tbody>
 </table>
+@code {
+    public List<PeriodClass> Period { get; set; } = new List<PeriodClass>();
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        string PeriodJson = await localStorage.GetItemAsync<string>("DefaultPeriod");
+        if (PeriodJson != null)
+        {
+            Period = JsonSerializer.Deserialize<List<PeriodClass>>(PeriodJson);
+        }
+        else///ถ้าไม่เจอข้อมูลให้ทำการเรียกค่าเดิม และ โหลดข้อมูลลงไปใหม่
+        {
+            await _PeriodService.GetDefaultPeriod();
+            PeriodJson = await localStorage.GetItemAsync<string>("DefaultPeriod");
+            Period = JsonSerializer.Deserialize<List<PeriodClass>>(PeriodJson);
+        }
+
+    }
+}
