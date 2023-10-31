@@ -4,55 +4,66 @@
 @inject IJSRuntime _Js;
 @inject PeriodClassService _PeriodService;
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
-<h3 class="text-center">ตารางเรียนระดับชั้น: </h3>
-<table class="table table-bordered border-primary text-center">
-    <thead>
-        <tr>
-            <th scope="col">วัน/เวลา</th>
-            @foreach (var Time in Period)
-            {
-                <h1>sdadsaad1</h1>
-            }
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <th scope="row">วันจันทร์</th>
-            <td>Mark</td>
-        </tr>
-        <tr>
-            <th scope="row">วันอังคาร</th>
-            <td>Jacob</td>
-        </tr>
-        <tr>
-            <th scope="row">วันพุธ</th>
-            <td colspan="2">Larry the Bird</td>
-        </tr>
-        <tr>
-            <th scope="row">วันพฤหัสบดี</th>
-            <td colspan="2">Larry the Bird</td>
-        </tr>
-        <tr>
-            <th scope="row">วันศุกร์</th>
-            <td colspan="2">Larry the Bird</td>
-        </tr>
-    </tbody>
-</table>
+<h3 class="text-center">ตารางเรียนระดับชั้น:</h3>
+<div class="table-responsive">
+    <table class="table table-bordered border-primary text-center p-5">
+        <thead>
+            <tr>
+                <th scope="col">วัน/เวลา</th>
+                @foreach (var Time in Period)
+                {
+                    if (Time.BreakTime == true)
+                    {
+
+                        <th rowspan="5">@Time.TimeStart/@Time.TimeEnd <br>พัก</th>
+                    }
+                    else
+                    {
+                        <th>@Time.TimeStart/@Time.TimeEnd</th>
+                    }
+                }
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">วันจันทร์</th>
+                <td>Mark</td>
+            </tr>
+            <tr>
+                <th scope="row">วันอังคาร</th>
+                <td>Jacob</td>
+            </tr>
+            <tr>
+                <th scope="row">วันพุธ</th>
+                <td colspan="2">Larry the Bird</td>
+            </tr>
+            <tr>
+                <th scope="row">วันพฤหัสบดี</th>
+                <td colspan="2">Larry the Bird</td>
+            </tr>
+            <tr>
+                <th scope="row">วันศุกร์</th>
+                <td colspan="2">Larry the Bird</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 @code {
     public List<PeriodClass> Period { get; set; } = new List<PeriodClass>();
+    private bool dataLoaded = false;
     protected async override Task OnAfterRenderAsync(bool firstRender)
     {
-        string PeriodJson = await localStorage.GetItemAsync<string>("DefaultPeriod");
-        if (PeriodJson != null)
+        if (dataLoaded == false)
         {
-            Period = JsonSerializer.Deserialize<List<PeriodClass>>(PeriodJson);
+            string periodJson = await localStorage.GetItemAsync<string>("DefaultPeriod");
+            if (periodJson == null)
+            {
+                await _PeriodService.GetDefaultPeriod();
+                periodJson = await localStorage.GetItemAsync<string>("DefaultPeriod");
+            }
+            Period = JsonSerializer.Deserialize<List<PeriodClass>>(periodJson);
+            dataLoaded = true;
+            StateHasChanged();
         }
-        else///ถ้าไม่เจอข้อมูลให้ทำการเรียกค่าเดิม และ โหลดข้อมูลลงไปใหม่
-        {
-            await _PeriodService.GetDefaultPeriod();
-            PeriodJson = await localStorage.GetItemAsync<string>("DefaultPeriod");
-            Period = JsonSerializer.Deserialize<List<PeriodClass>>(PeriodJson);
-        }
-
     }
 }
