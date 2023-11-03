@@ -1,4 +1,5 @@
 using Blazored.LocalStorage;
+using TeachingSchedule.Models;
 using TeachingSchedule.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,7 +7,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddScoped<TeachingScheduleDbContext, TeachingScheduleDbContext>();
 builder.Services.AddScoped<PeriodClassService>();
+builder.Services.AddScoped<RoomService>();
+builder.Services.AddScoped<ClassService>();
+builder.Services.AddScoped<SubjectService>();
+builder.Services.AddScoped<TeacherService>();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddBlazorBootstrap();
 var app = builder.Build();

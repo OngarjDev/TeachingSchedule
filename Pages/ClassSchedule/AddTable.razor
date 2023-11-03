@@ -1,23 +1,53 @@
 ﻿@page "/CreateTable"
-@using TeachingSchedule.Models;
-
+@using TeachingSchedule.Models
+@using BlazorBootstrap;
+@using TeachingSchedule.Services;
+@inject RoomService _RoomService;
+@inject ClassService _ClassService;
+@inject SubjectService _SubjectService;
+@inject TeacherService _TeacherService;
 <PageTitle>เพิ่มข้อมูล/สร้างตาราง</PageTitle>
 <div class="container m-0 p-3">
     <div class="row">
         <div class="col-xl-3 col-lg-4">
             <Card>
                 <CardBody>
+                    <h3>ชั้นเรียน</h3>
+                    <div class="input-group w-100">
+                    <EditForm class="w-100" Model="@Class" OnValidSubmit="OnAddClass">
+                        <label class="form-label">ตั้งชื่อชั้นเรียน</label>
+                        <InputText class="form-control" @bind-Value="Class.NameClass" Placeholder="เช่น ประถมศึกษา6 อนุบาล1" />
+                        <label class="form-label">จำนวนห้องเรียนในชั้น</label>
+                        <NumberInput class="form-control" @bind-Value="Class.NumberClass" Min="1" Max="10" Placeholder="กรอกจำนวนห้องเรียนที่มีอยู่ในชั้นเรียน" />
+                        <Button Class="w-100 mt-2" Color="ButtonColor.Primary" Type="ButtonType.Submit"><Icon Name="IconName.PlusLg"></Icon> เพิ่มชั้นเรียน</Button>
+                    </EditForm>
+                    </div>
+                </CardBody>
+            </Card>
+        </div>
+        <div class="col-xl-3 col-lg-4">
+            <Card>
+                <CardBody>
                     <h3>วิชาเรียน</h3>
                     <div class="input-group">
-                        <Dropdown Class="w-100">
-                            <DropdownToggleButton Class=" border border-black" Color="ButtonColor.Light" Size="Size.ExtraLarge">โปรดเลือกวิชาเรียน</DropdownToggleButton>
-                            <DropdownMenu>
-                                <DropdownItem To="#" Type="ButtonType.Link">สมศรี</DropdownItem>
-                                <hr />
-                                <DropdownItem To="#" Type="ButtonType.Link" Disabled="true">หากไม่มีข้อมูลโปรดเพิ่มข้อมูลก่อน</DropdownItem>
-                            </DropdownMenu>
-                        </Dropdown>
-                        <Button Class="w-100 mt-2" Color="ButtonColor.Primary" @onclick="OnAddSubject"><Icon Name="IconName.PlusLg"></Icon> เพิ่มวิชาเรียน</Button>
+                        @if(subject_select != null)
+                        {
+                            <h5>ชื่อวิชา: @subject_select.NameSubject</h5><br />
+                            <p>รหัสวิชา: @subject_select.PassSubject</p><br />
+                            <p class="text-center">จำนวนคาบเรียน: @subject_select.AmountSubject คาบ</p>
+                        }else{
+                        <div class="dropdown w-100">
+                            <button class="btn btn-light dropdown-toggle border border-black w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                เลือกวิชาเรียน
+                            </button>
+                            <ul class="dropdown-menu w-100">
+                                @foreach(var DataSubject in datasubject_db){
+                                <li><a class="dropdown-item" @onclick="() => SelectSubject(DataSubject.IdSubject)">@DataSubject.NameSubject</a></li>
+                                }
+                            </ul>
+                        </div>
+                        <Button Type="ButtonType.Button" Class="w-100 mt-2" Color="ButtonColor.Primary" @onclick="OnAddSubject"><Icon Name="IconName.PlusLg"></Icon> เพิ่มวิชาเรียน</Button>
+                    }
                     </div>
                 </CardBody>
             </Card>
@@ -25,36 +55,18 @@
         <div class="col-xl-3 col-lg-4">
             <Card>
                 <CardBody>
-            <h3>คุณครู</h3>
-            <div class="input-group">
-                <Dropdown Class="w-100">
-                    <DropdownToggleButton Class=" border border-black" Color="ButtonColor.Light" Size="Size.ExtraLarge">โปรดเลือกคุณครูผู้สอน</DropdownToggleButton>
-                    <DropdownMenu>
-                        <DropdownItem To="#" Type="ButtonType.Link">สมศรี</DropdownItem>
-                        <hr />
-                        <DropdownItem To="#" Type="ButtonType.Link" Disabled="true">หากไม่มีข้อมูลโปรดเพิ่มข้อมูลก่อน</DropdownItem>
-                    </DropdownMenu>
-                </Dropdown>
+                    <h3>คุณครู</h3>
+                    <div class="input-group">
+                        <div class="dropdown w-100">
+                            <button class="btn btn-light dropdown-toggle border border-black w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                เลือกอาจารย์ผู้สอน
+                            </button>
+                            <ul class="dropdown-menu w-100">
+                                <li><a class="dropdown-item" href="#">Action</a></li>
+                            </ul>
+                        </div>
 
-                <Button Class="w-100 mt-2" Color="ButtonColor.Primary"><Icon Name="IconName.PlusLg"></Icon> เพิ่มรายชื่อคุณครู</Button>
-            </div>
-            </CardBody>
-            </Card>
-        </div>
-        <div class="col-xl-3 col-lg-4">
-            <Card>
-                <CardBody>
-                    <h3>ห้องเรียน</h3>
-                    <div class="input-group">
-                        <Dropdown Class="w-100">
-                            <DropdownToggleButton Class=" border border-black" Color="ButtonColor.Light" Size="Size.ExtraLarge">โปรดเลือกรายการ</DropdownToggleButton>
-                            <DropdownMenu>
-                                <DropdownItem To="#" Type="ButtonType.Link">สมศรี</DropdownItem>
-                                <hr />
-                                <DropdownItem To="#" Type="ButtonType.Link" Disabled="true">หากไม่มีข้อมูลโปรดเพิ่มข้อมูลก่อน</DropdownItem>
-                            </DropdownMenu>
-                        </Dropdown>
-                        <Button Class="w-100 mt-2" Color="ButtonColor.Primary"><Icon Name="IconName.PlusLg"></Icon> เพิ่มห้องเรียน</Button>
+                        <Button Class="w-100 mt-2" Color="ButtonColor.Primary" @onclick="OnAddTeacher"><Icon Name="IconName.PlusLg"></Icon> เพิ่มรายชื่อคุณครู</Button>
                     </div>
                 </CardBody>
             </Card>
@@ -62,17 +74,17 @@
         <div class="col-xl-3 col-lg-4">
             <Card>
                 <CardBody>
-                    <h3>ชั้นเรียน</h3>
+                    <h3>สถานที่เรียน</h3>
                     <div class="input-group">
-                        <Dropdown Class="w-100">
-                            <DropdownToggleButton Class=" border border-black" Color="ButtonColor.Light" Size="Size.ExtraLarge">โปรดเลือกห้องที่จะสอน</DropdownToggleButton>
-                            <DropdownMenu>
-                                <DropdownItem To="#" Type="ButtonType.Link">สมศรี</DropdownItem>
-                                <hr />
-                                <DropdownItem To="#" Type="ButtonType.Link" Disabled="true">หากไม่มีข้อมูลโปรดเพิ่มข้อมูลก่อน</DropdownItem>
-                            </DropdownMenu>
-                        </Dropdown>
-                        <Button Class="w-100 mt-2" Color="ButtonColor.Primary"><Icon Name="IconName.PlusLg"></Icon> เพิ่มชั้นเรียน</Button>
+                        <div class="dropdown w-100">
+                            <button class="btn btn-light dropdown-toggle border border-black w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                เลือกห้องเรียน
+                            </button>
+                            <ul class="dropdown-menu w-100">
+                                <li><a class="dropdown-item" href="#">Action</a></li>
+                            </ul>
+                        </div>
+                        <Button Class="w-100 mt-2" Color="ButtonColor.Primary" @onclick="OnAddRoom"><Icon Name="IconName.PlusLg"></Icon> เพิ่มห้องเรียน</Button>
                     </div>
                 </CardBody>
             </Card>
@@ -80,82 +92,192 @@
     </div>
     <div class="row mt-3">
         <Tooltip Class="me-4" Title="ระบบจะสร้างตารางสุ่มขึ้นมา ตามข้อมูลที่เกี่ยวข้องกรณีห้องเรียน,ครู,วิชาเรียน ไม่พอระบบจะมีตัวเลือก 2 ทางคือ 1.คัดเลือกครูตัวแทน(ที่ว่าง) 2.ยกเลิกชั้นเรียน ศึกษาข้อมูลเพิ่มเติมได้ที่คู่มือการใช้">
-        <Switch @bind-Value="AutoCrateTable" Label="อนุญาต สุ่มตารางเรียนตามวิชาเอกอาจารย์,วิชาที่ชั้นเรียนนั้นต้องเรียน,ห้องเรียนประจำชั้น" />
+            <Switch @bind-Value="AutoCrateTable" Label="อนุญาต สุ่มตารางเรียนตามวิชาเอกอาจารย์,วิชาที่ชั้นเรียนนั้นต้องเรียน,ห้องเรียนประจำชั้น" />
         </Tooltip>
         <Button Class="w-100 mt-3" Color="ButtonColor.Success"> สร้างตารางสอน </Button>
     </div>
 </div>
 <hr />
-<TableViewComponent/>
+<TableViewComponent />
 
 
-<Modal @ref="modal" CloseOnEscape="ActiveModal" title="ฟอร์มเพิ่มข้อมูล">
+<Modal UseStaticBackdrop="true" Class="modal fade" @ref="modal" data-bs-focus="false" title="ฟอร์มเพิ่มข้อมูล" style="display:none;" IsScrollable="true">
     <BodyTemplate>
         @switch (FormType)
         {
-        case "Subject":
-    <EditForm Model="subject" OnValidSubmit="OnAddSubject">
-            <div class="mb-3">
-                <label class="form-label">Amount</label>
-                    <InputText @bind-Value="@NameSubject" Placeholder="" />
-                </div>
+            case "Subject":
+                <EditForm Model="@subject" OnValidSubmit="OnAddSubject">
+                    <DataAnnotationsValidator />
+                    <div class="mb-3">
+                        <label class="form-label">ชื่อรายวิชา</label>
+                        <InputText class="form-control" @bind-Value="@subject.NameSubject" Placeholder="กรอกชื่อรายวิชาเช่น ภาษาอังกฤษ ฟิสิกส์ เคมี" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">รหัสวิชา</label>
+                        <InputText class="form-control" @bind-Value="@subject.PassSubject" Placeholder="กรอกรหัสวิชา" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">จำนวนคาบเรียน</label>
+                        <NumberInput class="form-control" @bind-Value="@Amout" Placeholder="กรอกเลขคาบเรียน เช่น 2 คาบ,3 คาบ" Min="1" Max="20" TValue="int" />
+                    </div>
+                    <Button Class="w-100" Type="ButtonType.Submit" Color="ButtonColor.Primary">สร้างรายวิชา</Button>
                 </EditForm>
                 break;
-@*             case "Teacher":
-                <div class="mb-3">
-                            <label class="form-label">Amount</label>
-                    <InputText TValue="int" @bind-Value="@NameSubject" Placeholder="Enter amount" />
-                </div>
-                break; *@
+            case "Teacher":
+                <EditForm Model="@teacher" OnValidSubmit="OnAddTeacher">
+                    <DataAnnotationsValidator />
+                    <div class="mb-3">
+                        <label class="form-label">ชื่ออาจารย์</label>
+                        <InputText class="form-control" @bind-Value="@teacher.NameTeacher" Placeholder="กรอกชื่ออาจารย์" />
+                    </div>
+                    <div class="dropdown w-100">
+                        <label class="form-label">เลือกวิชาเอกเฉพาะ (ไม่จำเป็นต้องกรอก)</label>
+                        <p>วิชาเอกที่เลือก: @datasubject_db.FirstOrDefault(x => x.IdSubject == teacher.IdSubject)</p>
+                        <button class="btn btn-light dropdown-toggle border border-black w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            เลือกวิชาเอกสำหรับการสอน
+                        </button>
+                        <ul class="dropdown-menu w-100">
+                            @foreach (var DataSubject in datasubject_db)
+                            {
+                                <li><a class="dropdown-item" @onclick="() =>SetIdSubject(DataSubject.IdSubject)">@DataSubject.NameSubject</a></li>
+                            }
+                        </ul>
+                    </div>
+                    <Button Class="w-100 mt-3" Type="ButtonType.Submit" Color="ButtonColor.Primary">เพิ่มอาจารย์ผู้สอน</Button>
+                </EditForm>
+            break;
+            case "Room":
+                <EditForm Model="@room" OnValidSubmit="OnAddSubject">
+                    <DataAnnotationsValidator />
+                    <div class="mb-3">
+                        <label class="form-label">ชื่อห้อง</label>
+                        <InputText class="form-control" @bind-Value="@room.NameRoom" Placeholder="กรอกชื่อห้องเช่น ห้องวิทยาศาสตร์ ห้องเรียน701" />
+                    </div>
+                    <Tooltip Title="Am = 00:00 - 12:00 น.(เวลาเช้า) ,Pm = 12:00 -23.59 น.(เวลาช่วงเย็น)">
+                        <div class="mb-3">
+                            <label class="form-label">เวลาห้องเปิด</label>
+                            <TimeInput TValue="TimeOnly" @bind-Value="@TimeStart" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">เวลาห้องปิด</label>
+                            <TimeInput TValue="TimeOnly" @bind-Value="@TimeEnd" />
+                        </div>
+                    </Tooltip>
+                    <Button Class="w-100 mt-3" Type="ButtonType.Submit" Color="ButtonColor.Primary" @onclick="OnAddRoom">สร้างห้องเรียน</Button>
+                </EditForm>
+            break;
         }
     </BodyTemplate>
     <FooterTemplate>
         <Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick">ยกเลิก</Button>
-        <Button Color="ButtonColor.Primary">ดำเนินการต่อ</Button>
     </FooterTemplate>
 </Modal>
 
-@code{
-    public Subject subject { get; set; }
-    private Modal modal = default!;
+@code {
+    private int Amout { get; set; } = 1;
+    private Modal modal;
     private bool ActiveModal { get; set; } = false;
-    private string? FormType { get; set; } 
+    private string? FormType { get; set; }
     public bool AutoCrateTable { get; set; }
-    public string NameSubject { get; set; }
+    private bool show = false;
+    //สำหรับข้อมูลที่ผู้ใช้เลือก
+    private Subject subject_select { get; set; }
+    //สำหรับ เก็บข้อมูลที่ได้จาก DB
+    public List<Subject> datasubject_db { get; set; } = new List<Subject>();
+    //สำหรับ Object Form Add
+    private Subject subject = new Subject();
+    private Teacher teacher = new Teacher();
+    private Room room = new Room();
+    public TimeOnly TimeStart { get; set; }
+    public TimeOnly TimeEnd { get; set; }
+    private Class Class = new Class();
 
-
-    private async Task OnShowModalClick()
-    {
-        await modal.ShowAsync();
-    }
-
-    private async Task OnHideModalClick()
-    {
-        await modal.HideAsync();
-    }
     public async Task OnAddClass()
     {
-        
+        if (ActiveModal == false)
+        {
+            FormType = "Class";
+            ActiveModal = true;
+            await OnShowModalClick();
+        }
+        else
+        {
+            ActiveModal = false;
+            await _ClassService.AddClass(Class);
+        }
     }
-    public async Task OnRoom()
+    public async Task OnAddRoom()
     {
-        
+        if (ActiveModal == false)
+        {
+            ActiveModal = true;
+            FormType = "Room";
+            await OnShowModalClick();
+        }
+        else
+        {
+            ActiveModal = false;
+            room.TimestartRoom = TimeSpan.FromHours(TimeStart.Hour) + TimeSpan.FromMinutes(TimeStart.Minute);
+            room.TimeendRoom = TimeSpan.FromHours(TimeEnd.Hour) + TimeSpan.FromMinutes(TimeEnd.Minute);
+            await _RoomService.AddRoomToDb(room);
+        }
     }
     public async Task OnAddTeacher()
     {
-        
+        if (ActiveModal == false)
+        {
+            ActiveModal = true;
+            FormType = "Teacher";
+            await OnShowModalClick();
+        }
+        else
+        {
+            ActiveModal = false;
+            await _TeacherService.AddTeacher(teacher);
+        }
     }
     public async Task OnAddSubject()
     {
         if (ActiveModal == false)
         {
             FormType = "Subject";
+            ActiveModal = true;
             await OnShowModalClick();
         }
         else
         {
-            
+            ActiveModal = false;
+            subject.AmountSubject = Amout;
+            await _SubjectService.AddSubject(subject);
+            await OnHideModalClick();
+            await OnLoadData();
         }
     }
-
+    private void SetIdSubject(int idsubject)
+    {
+        teacher.IdSubject = idsubject;
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await OnLoadData();
+    }
+    private async Task OnLoadData()
+    {
+        datasubject_db = await _SubjectService.GetSubject();
+        StateHasChanged();
+    }
+    private async Task SelectSubject(int IdSubject)
+    {
+        subject_select = datasubject_db.Find(subject => subject.IdSubject == IdSubject);
+    }
+    private async Task OnShowModalClick()
+    {
+        ActiveModal = true;
+        await modal.ShowAsync();
+    }
+    private async Task OnHideModalClick()
+    {
+        await modal.HideAsync();
+        ActiveModal = false;
+    }
 }

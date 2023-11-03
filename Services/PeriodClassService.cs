@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
-using Microsoft.JSInterop;
-using System.Text.Json;
+﻿using System.Text.Json;
 using TeachingSchedule.Models;
 namespace TeachingSchedule.Services
 {
@@ -31,7 +29,7 @@ namespace TeachingSchedule.Services
             // แปลง Object เป็น JSON
             string Datajson = JsonSerializer.Serialize(DefaultPeriod);
             // บันทึก JSON ใน LocalStorage
-            await _LocalStorage.SetItemAsync("DefaultPeriod",Datajson);
+            await _LocalStorage.SetItemAsync("DefaultPeriod", Datajson);
         }
     }
 }
