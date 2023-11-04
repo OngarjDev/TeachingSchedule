@@ -13,5 +13,5 @@ public partial class Subject
 
     public int? AmountSubject { get; set; }
 
-    public virtual ICollection<Class> Classes { get; } = new List<Class>();
+    public int? IdClass { get; set; }
 }

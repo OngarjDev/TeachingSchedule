@@ -35,22 +35,12 @@ public partial class TeachingScheduleDbContext : DbContext
 
             entity.ToTable("Class");
 
-            entity.Property(e => e.IdClass)
-                .HasMaxLength(10)
-                .IsFixedLength()
-                .HasColumnName("id_class");
-            entity.Property(e => e.ClassroomClass).HasColumnName("classroom_class");
-            entity.Property(e => e.IdSubject).HasColumnName("id_subject");
-            entity.Property(e => e.IdTeacher).HasColumnName("id_teacher");
+            entity.Property(e => e.IdClass).HasColumnName("id_class");
             entity.Property(e => e.NameClass)
-                .HasMaxLength(10)
-                .IsFixedLength()
+                .HasMaxLength(50)
+                .IsUnicode(false)
                 .HasColumnName("name_class");
             entity.Property(e => e.NumberClass).HasColumnName("number_class");
-
-            entity.HasOne(d => d.IdSubjectNavigation).WithMany(p => p.Classes)
-                .HasForeignKey(d => d.IdSubject)
-                .HasConstraintName("FK_subject_class");
         });
 
         modelBuilder.Entity<Room>(entity =>
@@ -59,11 +49,13 @@ public partial class TeachingScheduleDbContext : DbContext
                 .HasNoKey()
                 .ToTable("Room");
 
+            entity.Property(e => e.IdClass).HasColumnName("id_class");
             entity.Property(e => e.IdRoom)
                 .ValueGeneratedOnAdd()
                 .HasColumnName("id_room");
             entity.Property(e => e.NameRoom)
                 .HasMaxLength(50)
+                .IsUnicode(false)
                 .HasColumnName("name_room");
             entity.Property(e => e.OpenregularRoom).HasColumnName("openregular_room");
             entity.Property(e => e.TimeendRoom).HasColumnName("timeend_room");
@@ -78,11 +70,14 @@ public partial class TeachingScheduleDbContext : DbContext
 
             entity.Property(e => e.IdSubject).HasColumnName("id_subject");
             entity.Property(e => e.AmountSubject).HasColumnName("amount_subject");
+            entity.Property(e => e.IdClass).HasColumnName("id_class");
             entity.Property(e => e.NameSubject)
                 .HasMaxLength(50)
+                .IsUnicode(false)
                 .HasColumnName("name_subject");
             entity.Property(e => e.PassSubject)
                 .HasMaxLength(50)
+                .IsUnicode(false)
                 .HasColumnName("pass_subject");
         });
 
@@ -92,14 +87,12 @@ public partial class TeachingScheduleDbContext : DbContext
 
             entity.ToTable("Teacher");
 
-            entity.Property(e => e.IdTeacher)
-                .ValueGeneratedNever()
-                .HasColumnName("id_teacher");
-            entity.Property(e => e.IdSubject)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("id_subject");
+            entity.Property(e => e.IdTeacher).HasColumnName("id_teacher");
+            entity.Property(e => e.IdClass).HasColumnName("id_class");
+            entity.Property(e => e.IdSubject).HasColumnName("id_subject");
             entity.Property(e => e.NameTeacher)
                 .HasMaxLength(50)
+                .IsUnicode(false)
                 .HasColumnName("name_teacher");
         });
 

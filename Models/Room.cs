@@ -14,4 +14,6 @@ public partial class Room
     public TimeSpan? TimeendRoom { get; set; }
 
     public bool? OpenregularRoom { get; set; }
+
+    public int? IdClass { get; set; }
 }

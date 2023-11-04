@@ -1,0 +1,103 @@
+﻿@page "/SelectClass"
+@using TeachingSchedule.Models;
+@using TeachingSchedule.Services;
+@inject ClassService _ClassService
+@inject NavigationManager Navigation
+<PageTitle>เลือก/สร้างชั้นเรียน</PageTitle>
+<div class="d-grid gap-2 col-6 mx-auto mt-2">
+    <Button Color="ButtonColor.Primary" @onclick='() => OnShowModalClick("AddClass",0)'>สร้างชั้นเรียน</Button>
+</div>
+<Modal @ref="modal" Title="@TitleModal">
+    <BodyTemplate>
+        @switch (modaltype)
+        {
+            case "AddClass":
+                <EditForm Model="@Class" OnValidSubmit="OnAddClass">
+                    <DataAnnotationsValidator />
+                    <div class="mb-3">
+                        <label class="form-label">ชื่อชั้นเรียน</label>
+                        <InputText class="form-control" @bind-Value="@Class.NameClass" Placeholder="กรอกชื่อรายชั้นเรียนเช่น ป.6 ม.1" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">จำนวนห้องเรียน</label>
+                        <NumberInput class="form-control" @bind-Value="@Class.NumberClass" Min="1" Max="10" Placeholder="กรอกจำนวนห้องเรียน" />
+                    </div>
+                    <Button Class="w-100" Type="ButtonType.Submit" Color="ButtonColor.Primary">สร้างชั้นเรียน</Button>
+                </EditForm>
+                break;
+            case "DeleteClass":
+            <p>ท่านต้องการจะลบข้อมูลชั้นเรียน หรือไม่</p>
+                <Button Color="ButtonColor.Danger" @onclick="() => OnDeleteClass(id_delete??0)" Class="w-100">ยืนยันที่จะลบชั้นเรียน</Button>
+            break;
+        }
+    </BodyTemplate>
+</Modal>
+
+<table class="table text-center table-striped table-hover table-bordered mt-3">
+    <thead>
+        <tr>
+            <th scope="col">ไอดี</th>
+            <th scope="col">ชื่อชั้นเรียน</th>
+            <th scope="col">จำนวนห้อง</th>
+            <th scope="col" colspan="2">จัดการชั้นเรียน</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var ClassData in ClassData_DB)
+        {
+            <tr>
+                <th scope="row">@ClassData.IdClass</th>
+                <td>@ClassData.NameClass</td>
+                <td>@ClassData.NumberClass</td>
+                <td><Button Color="ButtonColor.Success" Class="w-100" @onclick='@(()=> Navigation.NavigateTo("/CreateTable/"+ClassData.IdClass))'>สร้างตารางใหม่</Button></td>
+                <td><Button Color="ButtonColor.Danger" Class="w-100" @onclick='() => OnShowModalClick("DeleteClass",ClassData.IdClass)'>ลบชั้นเรียน</Button></td>
+            </tr>
+        }
+    </tbody>
+</table>
+@code {
+    public Class Class = new Class();
+    public List<Class> ClassData_DB = new List<Class>();
+    private Modal modal = default!;
+    private string? modaltype { get; set; }
+    private string? TitleModal { get; set; }
+    private int? id_delete { get; set; } = 0;
+    public async Task OnShowModalClick(string ShownModalType,int? id_modal)
+    {
+        switch (ShownModalType)
+        {
+            case "AddClass": modaltype = "AddClass"; break;
+            case "DeleteClass": modaltype = "DeleteClass"; id_delete = id_modal; break;
+        }
+        await modal.ShowAsync();
+    }
+
+    private async Task OnHideModalClick()
+    {
+        await modal.HideAsync();
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await OnLoadData();
+    }
+    private async Task OnLoadData()
+    {
+        ClassData_DB = await _ClassService.GetClass();
+        StateHasChanged();
+    }
+    private async Task OnAddClass()
+    {
+        TitleModal = "เพิ่มชั้นเรียน";
+        await _ClassService.AddClass(Class);
+        Class = new Class();
+        await OnHideModalClick();
+        await OnLoadData();
+    }
+    private async Task OnDeleteClass(int idclass)
+    {
+        TitleModal = "ท่านแน่ใจหรือไม่ที่ต้องการลบชั้นเรียน";
+        await _ClassService.DeleteClass(idclass);
+        await OnLoadData();
+        await OnHideModalClick();
+    }
+}

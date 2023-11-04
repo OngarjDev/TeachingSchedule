@@ -9,5 +9,7 @@ public partial class Teacher
 
     public string NameTeacher { get; set; } = null!;
 
-    public int IdSubject { get; set; }
+    public int? IdSubject { get; set; }
+
+    public int? IdClass { get; set; }
 }
