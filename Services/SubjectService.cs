@@ -17,9 +17,9 @@ namespace TeachingSchedule.Services
             await _DbContext.Subjects.AddAsync(DataSubject);
             await _DbContext.SaveChangesAsync();
         }
-        public async Task<List<Subject>> GetSubject()
+        public async Task<List<Subject>> GetSubjectByIdClass(int IdClass)
         {
-            return await _DbContext.Subjects.ToListAsync();
+            return await _DbContext.Subjects.Where(subject => subject.IdClass == IdClass).ToListAsync();
         }
     }
 }

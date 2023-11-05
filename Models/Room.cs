@@ -16,4 +16,6 @@ public partial class Room
     public bool? OpenregularRoom { get; set; }
 
     public int? IdClass { get; set; }
+
+    public virtual Class? IdClassNavigation { get; set; }
 }

@@ -12,4 +12,6 @@ public partial class Teacher
     public int? IdSubject { get; set; }
 
     public int? IdClass { get; set; }
+
+    public virtual Class? IdClassNavigation { get; set; }
 }

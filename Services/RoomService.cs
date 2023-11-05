@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.EntityFrameworkCore;
 using TeachingSchedule.Models;
 
 namespace TeachingSchedule.Services
@@ -12,9 +13,12 @@ namespace TeachingSchedule.Services
         }
         public async Task AddRoomToDb(Room DataRoom)
         {
-            DataRoom.IdRoom = 0;
             await _DbContext.Rooms.AddAsync(DataRoom);
             await _DbContext.SaveChangesAsync();
+        }
+        public async Task<List<Room>> GetRoomByIdClass(int IdClass)
+        {
+            return await _DbContext.Rooms.Where(room => room.IdClass == IdClass).ToListAsync();
         }
     }
 }

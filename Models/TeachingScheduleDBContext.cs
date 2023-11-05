@@ -36,6 +36,9 @@ public partial class TeachingScheduleDbContext : DbContext
             entity.ToTable("Class");
 
             entity.Property(e => e.IdClass).HasColumnName("id_class");
+            entity.Property(e => e.ContentClass)
+                .IsUnicode(false)
+                .HasColumnName("content_class");
             entity.Property(e => e.NameClass)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -45,14 +48,12 @@ public partial class TeachingScheduleDbContext : DbContext
 
         modelBuilder.Entity<Room>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("Room");
+            entity.HasKey(e => e.IdRoom);
 
+            entity.ToTable("Room");
+
+            entity.Property(e => e.IdRoom).HasColumnName("id_room");
             entity.Property(e => e.IdClass).HasColumnName("id_class");
-            entity.Property(e => e.IdRoom)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("id_room");
             entity.Property(e => e.NameRoom)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -60,6 +61,10 @@ public partial class TeachingScheduleDbContext : DbContext
             entity.Property(e => e.OpenregularRoom).HasColumnName("openregular_room");
             entity.Property(e => e.TimeendRoom).HasColumnName("timeend_room");
             entity.Property(e => e.TimestartRoom).HasColumnName("timestart_room");
+
+            entity.HasOne(d => d.IdClassNavigation).WithMany(p => p.Rooms)
+                .HasForeignKey(d => d.IdClass)
+                .HasConstraintName("FK_Room_Class");
         });
 
         modelBuilder.Entity<Subject>(entity =>
@@ -83,7 +88,7 @@ public partial class TeachingScheduleDbContext : DbContext
 
         modelBuilder.Entity<Teacher>(entity =>
         {
-            entity.HasKey(e => e.IdTeacher);
+            entity.HasKey(e => e.IdTeacher).HasName("PK_Teacher_1");
 
             entity.ToTable("Teacher");
 
@@ -94,6 +99,10 @@ public partial class TeachingScheduleDbContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("name_teacher");
+
+            entity.HasOne(d => d.IdClassNavigation).WithMany(p => p.Teachers)
+                .HasForeignKey(d => d.IdClass)
+                .HasConstraintName("FK_Teacher_Class");
         });
 
         OnModelCreatingPartial(modelBuilder);

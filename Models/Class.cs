@@ -10,4 +10,10 @@ public partial class Class
     public string? NameClass { get; set; }
 
     public int NumberClass { get; set; }
+
+    public string? ContentClass { get; set; }
+
+    public virtual ICollection<Room> Rooms { get; set; } = new List<Room>();
+
+    public virtual ICollection<Teacher> Teachers { get; set; } = new List<Teacher>();
 }

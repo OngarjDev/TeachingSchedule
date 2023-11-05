@@ -9,37 +9,38 @@
 <PageTitle>เพิ่มข้อมูล/สร้างตาราง</PageTitle>
 <div class="container m-0 p-3">
     <div class="row">
-        <div class="col-xl-3 col-lg-4">
+        <div class="col-xl-4 col-lg-4">
             <Card>
                 <CardBody>
                     <h3>วิชาเรียน</h3>
-                    <div class="input-group">
-                        @if (subject_select != null)
-                        {
-                            <h5>ชื่อวิชา: @subject_select.NameSubject (@subject_select.PassSubject)</h5>
-                            <br />
-                            <p class="text-center">จำนวนคาบเรียน: @subject_select.AmountSubject คาบ</p>
-                        }
-                        else
-                        {
-                            <div class="dropdown w-100">
-                                <button class="btn btn-light dropdown-toggle border border-black w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    เลือกวิชาเรียน
-                                </button>
-                                <ul class="dropdown-menu w-100">
-                                    @foreach (var DataSubject in datasubject_db)
-                                    {
-                                        <li><a class="dropdown-item" @onclick="() => SelectSubject(DataSubject.IdSubject)">@DataSubject.NameSubject</a></li>
-                                    }
-                                </ul>
-                            </div>
-                            <Button Type="ButtonType.Button" Class="w-100 mt-2" Color="ButtonColor.Primary" @onclick='() => OnShowModalClick("Subject")'><Icon Name="IconName.PlusLg"></Icon> เพิ่มวิชาเรียน</Button>
-                        }
-                    </div>
+                    @if (subject_select != null)
+                    {
+                        <h5>ชื่อวิชา: @subject_select.NameSubject (@subject_select.PassSubject)</h5>
+                        <p >จำนวนคาบเรียน: @subject_select.AmountSubject คาบ</p>
+                        <Button Class="w-100" Color="ButtonColor.Danger">ลบวิชาเรียน</Button>
+                        <div class="d-grid gap-2 col-6 mx-auto mt-2">
+                            <Button Color="ButtonColor.Link" @onclick='() => ClearSelection("Subject")'>ล้างการเลือก</Button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="dropdown w-100">
+                            <button class="btn btn-light dropdown-toggle border border-black w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                ดูรายวิชาเรียนในสายชั้น
+                            </button>
+                            <ul class="dropdown-menu w-100">
+                                @foreach (var DataSubject in datasubject_db)
+                                {
+                                    <li><a class="dropdown-item" @onclick="() => SelectSubject(DataSubject.IdSubject)">@DataSubject.NameSubject</a></li>
+                                }
+                            </ul>
+                        </div>
+                        <Button Type="ButtonType.Button" Class="w-100 mt-2" Color="ButtonColor.Primary" @onclick='() => OnShowModalClick("Subject")'><Icon Name="IconName.PlusLg"></Icon> เพิ่มวิชาเรียน</Button>
+                    }
                 </CardBody>
             </Card>
         </div>
-        <div class="col-xl-3 col-lg-4">
+        <div class="col-xl-4 col-lg-4">
             <Card>
                 <CardBody>
                     <h3>คุณครู</h3>
@@ -54,7 +55,7 @@
                         {
                             <div class="dropdown w-100">
                                 <button class="btn btn-light dropdown-toggle border border-black w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    เลือกอาจารย์ผู้สอน
+                                    ดูรายชื่ออาจารย์ผู้สอน
                                 </button>
                                 <ul class="dropdown-menu w-100">
                                     @foreach (var DataTeacher in datateacher_db)
@@ -69,17 +70,20 @@
                 </CardBody>
             </Card>
         </div>
-        <div class="col-xl-3 col-lg-4">
+        <div class="col-xl-4 col-lg-4">
             <Card>
                 <CardBody>
                     <h3>สถานที่เรียน</h3>
                     <div class="input-group">
                         <div class="dropdown w-100">
                             <button class="btn btn-light dropdown-toggle border border-black w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                เลือกห้องเรียน
+                                ดูรายชื่อห้องเรียน
                             </button>
                             <ul class="dropdown-menu w-100">
-                                <li><a class="dropdown-item" href="#">Action</a></li>
+                                @foreach (var DataRoom in dataroom_db)
+                                {
+                                    <li><a class="dropdown-item" @onclick="() => SelectTeacher(DataRoom.IdRoom)">@DataRoom.NameRoom</a></li>
+                                }
                             </ul>
                         </div>
                         <Button Class="w-100 mt-2" Color="ButtonColor.Primary" @onclick='() => OnShowModalClick("Room")'><Icon Name="IconName.PlusLg"></Icon> เพิ่มห้องเรียน</Button>
@@ -89,10 +93,7 @@
         </div>
     </div>
     <div class="row mt-3">
-        <Tooltip Class="me-4" Title="ระบบจะสร้างตารางสุ่มขึ้นมา ตามข้อมูลที่เกี่ยวข้องกรณีห้องเรียน,ครู,วิชาเรียน ไม่พอระบบจะมีตัวเลือก 2 ทางคือ 1.คัดเลือกครูตัวแทน(ที่ว่าง) 2.ยกเลิกชั้นเรียน ศึกษาข้อมูลเพิ่มเติมได้ที่คู่มือการใช้">
-            <Switch @bind-Value="AutoCrateTable" Label="อนุญาต สุ่มตารางเรียนตามวิชาเอกอาจารย์,วิชาที่ชั้นเรียนนั้นต้องเรียน,ห้องเรียนประจำชั้น" />
-        </Tooltip>
-        <Button Class="w-100 mt-3" Color="ButtonColor.Success"> สร้างตารางสอน </Button>
+        <Button Class="w-100 mt-3" Color="ButtonColor.Success">สร้างตารางสอน</Button>
     </div>
 </div>
 <hr />
@@ -146,7 +147,7 @@
                 </EditForm>
                 break;
             case "Room":
-                <EditForm Model="@room" OnValidSubmit="OnAddSubject">
+                <EditForm Model="@room" OnValidSubmit="OnAddRoom">
                     <DataAnnotationsValidator />
                     <div class="mb-3">
                         <label class="form-label">ชื่อห้อง</label>
@@ -159,16 +160,16 @@
                     {
                         <Tooltip Title="Am = 00:00 - 12:00 น.(เวลาเช้า) ,Pm = 12:00 -23.59 น.(เวลาช่วงเย็น)">
                             <div class="mb-3">
-                            <label class="form-label">เวลาห้องเปิด</label>
-                            <TimeInput TValue="TimeOnly" @bind-Value="@TimeStart" />
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">เวลาห้องปิด</label>
-                            <TimeInput TValue="TimeOnly" @bind-Value="@TimeEnd" />
-                        </div>
+                                <label class="form-label">เวลาห้องเปิด</label>
+                                <TimeInput TValue="TimeOnly" @bind-Value="@TimeStart" />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">เวลาห้องปิด</label>
+                                <TimeInput TValue="TimeOnly" @bind-Value="@TimeEnd" />
+                            </div>
                         </Tooltip>
                     }
-                    <Button Class="w-100 mt-3" Type="ButtonType.Submit" Color="ButtonColor.Primary" @onclick="OnAddRoom">สร้างห้องเรียน</Button>
+                    <Button Class="w-100 mt-3" Type="ButtonType.Submit" Color="ButtonColor.Primary">สร้างห้องเรียน</Button>
                 </EditForm>
                 break;
         }
@@ -185,9 +186,11 @@
     private Modal modal;
     public bool AutoCrateTable { get; set; }
     //สำหรับข้อมูลที่ผู้ใช้เลือก
+    private Room room_select { get; set; }
     private Subject subject_select { get; set; }
     private Teacher teacher_select { get; set; }
     //สำหรับ เก็บข้อมูลที่ได้จาก DB
+    public List<Room> dataroom_db { get; set; } = new List<Room>();
     public List<Teacher> datateacher_db { get; set; } = new List<Teacher>();
     public List<Subject> datasubject_db { get; set; } = new List<Subject>();
     //สำหรับ Object Form Add
@@ -201,6 +204,7 @@
 
     public async Task OnAddRoom()
     {
+        room.IdClass = Id;
         room.OpenregularRoom = RoomStatus;
         room.TimestartRoom = TimeSpan.FromHours(TimeStart.Hour) + TimeSpan.FromMinutes(TimeStart.Minute);
         room.TimeendRoom = TimeSpan.FromHours(TimeEnd.Hour) + TimeSpan.FromMinutes(TimeEnd.Minute);
@@ -211,6 +215,7 @@
     }
     public async Task OnAddTeacher()
     {
+        teacher.IdClass = Id;
         await _TeacherService.AddTeacher(teacher);
         await OnHideModalClick();
         teacher = new Teacher();//ล้างข้อมูลที่เพิ่ม
@@ -218,6 +223,7 @@
     }
     public async Task OnAddSubject()
     {
+        subject.IdClass = Id;
         subject.AmountSubject = Amout;
         await _SubjectService.AddSubject(subject);
         await OnHideModalClick();
@@ -234,8 +240,9 @@
     }
     private async Task OnLoadData()
     {
-        datasubject_db = await _SubjectService.GetSubject();
-        datateacher_db = await _TeacherService.GetTeacher();
+        datasubject_db = await _SubjectService.GetSubjectByIdClass(Id);
+        datateacher_db = await _TeacherService.GetTeacherByIdClass(Id);
+        dataroom_db = await _RoomService.GetRoomByIdClass(Id);
         StateHasChanged();
     }
     private async Task SelectSubject(int IdSubject)
@@ -245,6 +252,10 @@
     private async Task SelectTeacher(int IdTeacher)
     {
         teacher_select = datateacher_db.Find(teacher => teacher.IdTeacher == IdTeacher);
+    }
+    private async Task SelectRoom(int IdRoom)
+    {
+        room_select = dataroom_db.Find(room => room.IdRoom == IdRoom);
     }
     private async Task OnShowModalClick(string ShownModalType)
     {
@@ -259,5 +270,14 @@
     private async Task OnHideModalClick()
     {
         await modal.HideAsync();
+    }
+    private async Task ClearSelection(string nametype)
+    {
+        switch (nametype)
+        {
+            case "Subject": subject_select = new Subject(); break;
+            case "Teacher": teacher_select = new Teacher(); break;
+            case "Room": room_select = new Room();break;
+        }
     }
 }
