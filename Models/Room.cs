@@ -9,12 +9,6 @@ public partial class Room
 
     public string NameRoom { get; set; } = null!;
 
-    public TimeSpan? TimestartRoom { get; set; }
-
-    public TimeSpan? TimeendRoom { get; set; }
-
-    public bool? OpenregularRoom { get; set; }
-
     public int? IdClass { get; set; }
 
     public virtual Class? IdClassNavigation { get; set; }

@@ -21,5 +21,11 @@ namespace TeachingSchedule.Services
         {
             return await _DbContext.Subjects.Where(subject => subject.IdClass == IdClass).ToListAsync();
         }
+        public async Task DeleteSubject(int IdSubject)
+        {
+            Subject DataSubject = await _DbContext.Subjects.Where(x => x.IdSubject == IdSubject).FirstAsync();
+            _DbContext.Subjects.Remove(DataSubject);
+            _DbContext.SaveChanges();
+        }
     }
 }

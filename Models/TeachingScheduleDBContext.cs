@@ -21,6 +21,8 @@ public partial class TeachingScheduleDbContext : DbContext
 
     public virtual DbSet<Subject> Subjects { get; set; }
 
+    public virtual DbSet<TableClassRoom> TableClassRooms { get; set; }
+
     public virtual DbSet<Teacher> Teachers { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -58,9 +60,6 @@ public partial class TeachingScheduleDbContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("name_room");
-            entity.Property(e => e.OpenregularRoom).HasColumnName("openregular_room");
-            entity.Property(e => e.TimeendRoom).HasColumnName("timeend_room");
-            entity.Property(e => e.TimestartRoom).HasColumnName("timestart_room");
 
             entity.HasOne(d => d.IdClassNavigation).WithMany(p => p.Rooms)
                 .HasForeignKey(d => d.IdClass)
@@ -84,6 +83,26 @@ public partial class TeachingScheduleDbContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("pass_subject");
+        });
+
+        modelBuilder.Entity<TableClassRoom>(entity =>
+        {
+            entity.HasKey(e => e.IdTableclass);
+
+            entity.ToTable("TableClassRoom");
+
+            entity.Property(e => e.IdTableclass).HasColumnName("id_tableclass");
+            entity.Property(e => e.BreaktimeTableclass).HasColumnName("breaktime_tableclass");
+            entity.Property(e => e.DayTableclass)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("day_tableclass");
+            entity.Property(e => e.IdClass).HasColumnName("id_class");
+            entity.Property(e => e.IdRoom).HasColumnName("id_room");
+            entity.Property(e => e.IdSubject).HasColumnName("id_subject");
+            entity.Property(e => e.IdTeacher).HasColumnName("id_teacher");
+            entity.Property(e => e.IdtimePeriod).HasColumnName("idtime_period");
+            entity.Property(e => e.NumberroomTableclass).HasColumnName("numberroom_tableclass");
         });
 
         modelBuilder.Entity<Teacher>(entity =>

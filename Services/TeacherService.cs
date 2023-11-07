@@ -20,5 +20,11 @@ namespace TeachingSchedule.Services
         {
             return await _DbContext.Teachers.Where(teacher => teacher.IdClass == idclass).ToListAsync();
         }
+        public async Task DeleteTeacher(int IdTeacher)
+        {
+            Teacher DataTeacher = await _DbContext.Teachers.Where(x => x.IdTeacher == IdTeacher).FirstAsync();
+            _DbContext.Teachers.Remove(DataTeacher);
+            _DbContext.SaveChanges();
+        }
     }
 }

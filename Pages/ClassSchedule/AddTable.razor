@@ -1,5 +1,5 @@
 ﻿@page "/CreateTable/{Id:int}"
-@using TeachingSchedule.Models
+@using TeachingSchedule.Models;
 @using BlazorBootstrap;
 @using TeachingSchedule.Services;
 @inject RoomService _RoomService
@@ -16,8 +16,8 @@
                     @if (subject_select != null)
                     {
                         <h5>ชื่อวิชา: @subject_select.NameSubject (@subject_select.PassSubject)</h5>
-                        <p >จำนวนคาบเรียน: @subject_select.AmountSubject คาบ</p>
-                        <Button Class="w-100" Color="ButtonColor.Danger">ลบวิชาเรียน</Button>
+                        <p>จำนวนคาบเรียน: @subject_select.AmountSubject คาบ</p>
+                        <Button Class="w-100" Color="ButtonColor.Danger" @onclick="() => DeleteSubject(subject_select.IdSubject)">ลบวิชาเรียน</Button>
                         <div class="d-grid gap-2 col-6 mx-auto mt-2">
                             <Button Color="ButtonColor.Link" @onclick='() => ClearSelection("Subject")'>ล้างการเลือก</Button>
                         </div>
@@ -44,29 +44,31 @@
             <Card>
                 <CardBody>
                     <h3>คุณครู</h3>
-                    <div class="input-group">
-                        @if (teacher_select != null)
-                        {
-                            <p class="fs-5 mb-2">ชื่อผู้สอน: @teacher_select.NameTeacher</p>
-                            <br />
-                            <p class="text-center">วิชาเอก: @(datasubject_db.Find(subject => subject.IdSubject == teacher_select.IdSubject)?.NameSubject ?? "ไม่ได้ระบุ")</p>
-                        }
-                        else
-                        {
-                            <div class="dropdown w-100">
-                                <button class="btn btn-light dropdown-toggle border border-black w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    ดูรายชื่ออาจารย์ผู้สอน
-                                </button>
-                                <ul class="dropdown-menu w-100">
-                                    @foreach (var DataTeacher in datateacher_db)
-                                    {
-                                        <li><a class="dropdown-item" @onclick="() => SelectTeacher(DataTeacher.IdTeacher)">@DataTeacher.NameTeacher</a></li>
-                                    }
-                                </ul>
-                            </div>
-                            <Button Class="w-100 mt-2" Color="ButtonColor.Primary" @onclick='() => OnShowModalClick("Teacher")'><Icon Name="IconName.PlusLg"></Icon> เพิ่มรายชื่อคุณครู</Button>
-                        }
-                    </div>
+                    @if (teacher_select != null)
+                    {
+                        <h5>ชื่อผู้สอน: @teacher_select.NameTeacher</h5>
+                        <p>วิชาเอก: @(datasubject_db.Find(subject => subject.IdSubject == teacher_select.IdSubject)?.NameSubject ?? "ไม่ได้ระบุ")</p>
+                        <Button Class="w-100" Color="ButtonColor.Danger" @onclick="() => DeleteTeacher(teacher_select.IdTeacher)">ลบวิชาเรียน</Button>
+                        <div class="d-grid gap-2 col-6 mx-auto mt-2">
+                            <Button Color="ButtonColor.Link" @onclick='() => ClearSelection("Teacher")'>ล้างการเลือก</Button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="dropdown w-100">
+                            <button class="btn btn-light dropdown-toggle border border-black w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                ดูรายชื่ออาจารย์ผู้สอน
+                            </button>
+                            <ul class="dropdown-menu w-100">
+                                @foreach (var DataTeacher in datateacher_db)
+                                {
+                                    <li><a class="dropdown-item" @onclick="() => SelectTeacher(DataTeacher.IdTeacher)">@DataTeacher.NameTeacher</a></li>
+                                }
+                            </ul>
+                        </div>
+                        <Button Class="w-100 mt-2" Color="ButtonColor.Primary" @onclick='() => OnShowModalClick("Teacher")'><Icon Name="IconName.PlusLg"></Icon> เพิ่มรายชื่อคุณครู</Button>
+                    }
+
                 </CardBody>
             </Card>
         </div>
@@ -74,7 +76,15 @@
             <Card>
                 <CardBody>
                     <h3>สถานที่เรียน</h3>
-                    <div class="input-group">
+                    @if (room_select != null)
+                    {
+                        <h5 class="fs-5 mb-2">ชื่อห้องเรียน: @room_select.NameRoom</h5>
+                        <br />
+                        <Button Class="w-100" Color="ButtonColor.Danger" @onclick="() => DeleteRoom(room_select.IdRoom) ">ลบห้องเรียน</Button>
+                        <div class="d-grid gap-2 col-6 mx-auto mt-2">
+                            <Button Color="ButtonColor.Link" @onclick='() => ClearSelection("Room")'>ล้างการเลือก</Button>
+                        </div>
+                    }else{
                         <div class="dropdown w-100">
                             <button class="btn btn-light dropdown-toggle border border-black w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 ดูรายชื่อห้องเรียน
@@ -82,18 +92,18 @@
                             <ul class="dropdown-menu w-100">
                                 @foreach (var DataRoom in dataroom_db)
                                 {
-                                    <li><a class="dropdown-item" @onclick="() => SelectTeacher(DataRoom.IdRoom)">@DataRoom.NameRoom</a></li>
+                                    <li><a class="dropdown-item" @onclick="() => SelectRoom(DataRoom.IdRoom)">@DataRoom.NameRoom</a></li>
                                 }
                             </ul>
                         </div>
                         <Button Class="w-100 mt-2" Color="ButtonColor.Primary" @onclick='() => OnShowModalClick("Room")'><Icon Name="IconName.PlusLg"></Icon> เพิ่มห้องเรียน</Button>
-                    </div>
+                   }
                 </CardBody>
             </Card>
         </div>
     </div>
     <div class="row mt-3">
-        <Button Class="w-100 mt-3" Color="ButtonColor.Success">สร้างตารางสอน</Button>
+        <Button Class="w-100 mt-3" Color="ButtonColor.Success" @onclick="() => GenerateTable()">สร้างตารางสอน</Button>
     </div>
 </div>
 <hr />
@@ -153,22 +163,6 @@
                         <label class="form-label">ชื่อห้อง</label>
                         <InputText class="form-control" @bind-Value="@room.NameRoom" Placeholder="กรอกชื่อห้องเช่น ห้องวิทยาศาสตร์ ห้องเรียน701" />
                     </div>
-                    <div class="mb-3">
-                        <Switch @bind-Value="@RoomStatus" Label="อนุญาต ให้ห้องเรียนนี้เปิดตลอด" />
-                    </div>
-                    @if (RoomStatus == false)
-                    {
-                        <Tooltip Title="Am = 00:00 - 12:00 น.(เวลาเช้า) ,Pm = 12:00 -23.59 น.(เวลาช่วงเย็น)">
-                            <div class="mb-3">
-                                <label class="form-label">เวลาห้องเปิด</label>
-                                <TimeInput TValue="TimeOnly" @bind-Value="@TimeStart" />
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">เวลาห้องปิด</label>
-                                <TimeInput TValue="TimeOnly" @bind-Value="@TimeEnd" />
-                            </div>
-                        </Tooltip>
-                    }
                     <Button Class="w-100 mt-3" Type="ButtonType.Submit" Color="ButtonColor.Primary">สร้างห้องเรียน</Button>
                 </EditForm>
                 break;
@@ -197,17 +191,15 @@
     private Subject subject = new Subject();
     private Teacher teacher = new Teacher();
     private Room room = new Room();
-    public TimeOnly TimeStart { get; set; }
-    public TimeOnly TimeEnd { get; set; }
-    public bool RoomStatus { get; set; }
     public string FormType { get; set; }
 
+    private async Task GenerateTable()
+    {
+        await _ClassService.GenerateTable(Id);
+    }
     public async Task OnAddRoom()
     {
         room.IdClass = Id;
-        room.OpenregularRoom = RoomStatus;
-        room.TimestartRoom = TimeSpan.FromHours(TimeStart.Hour) + TimeSpan.FromMinutes(TimeStart.Minute);
-        room.TimeendRoom = TimeSpan.FromHours(TimeEnd.Hour) + TimeSpan.FromMinutes(TimeEnd.Minute);
         await _RoomService.AddRoomToDb(room);
         await OnHideModalClick();
         room = new Room();//ล้างข้อมูลที่เพิ่ม
@@ -275,9 +267,27 @@
     {
         switch (nametype)
         {
-            case "Subject": subject_select = new Subject(); break;
-            case "Teacher": teacher_select = new Teacher(); break;
-            case "Room": room_select = new Room();break;
+            case "Subject": subject_select = null; break;
+            case "Teacher": teacher_select = null; break;
+            case "Room": room_select = null; break;
         }
+    }
+    private async Task DeleteSubject(int IdSubject)
+    {
+        await _SubjectService.DeleteSubject(IdSubject);
+        await ClearSelection("Subject");
+        await OnLoadData();
+    }
+    private async Task DeleteTeacher(int IdTeacher)
+    {
+        await _TeacherService.DeleteTeacher(IdTeacher);
+        await ClearSelection("Teacher");
+        await OnLoadData();
+    }
+    private async Task DeleteRoom(int IdRoom)
+    {
+        await _RoomService.DeleteRoom(IdRoom);
+        await ClearSelection("Room");
+        await OnLoadData();
     }
 }
