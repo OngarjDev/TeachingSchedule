@@ -92,6 +92,9 @@ public partial class TeachingScheduleDbContext : DbContext
             entity.ToTable("TableClassRoom");
 
             entity.Property(e => e.IdTableclass).HasColumnName("id_tableclass");
+            entity.Property(e => e.AmountSubject)
+                .HasDefaultValueSql("((1))")
+                .HasColumnName("amount_subject");
             entity.Property(e => e.BreaktimeTableclass).HasColumnName("breaktime_tableclass");
             entity.Property(e => e.DayTableclass)
                 .HasMaxLength(50)

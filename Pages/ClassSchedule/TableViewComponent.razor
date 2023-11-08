@@ -4,7 +4,6 @@
 @inject IJSRuntime _Js;
 @inject PeriodClassService _PeriodService;
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
-<h3 class="text-center">ตารางเรียนระดับชั้น:</h3>
 <div class="table-responsive">
     <table class="table table-bordered border-primary text-center p-5">
         <thead>
@@ -27,11 +26,20 @@
         <tbody>
             <tr>
                 <th scope="row">วันจันทร์</th>
-                <td>Mark</td>
+                @foreach (var MondayData in tableClassRooms){
+                <td colspan="@(MondayData.AmountSubject)">@(MondayData.IdSubject),
+                @MondayData.IdTeacher;
+                </td>
+                }
             </tr>
+            @{
+            }
             <tr>
                 <th scope="row">วันอังคาร</th>
-                <td>Jacob</td>
+@*                 @foreach (var TuData in validTuData)
+                {
+                    <td>@TuData.IdSubject</td>
+                } *@
             </tr>
             <tr>
                 <th scope="row">วันพุธ</th>
@@ -50,7 +58,23 @@
 </div>
 @code {
     public List<PeriodClass> Period { get; set; } = new List<PeriodClass>();
+    public List<TableClassRoom> tableClassRooms { get; set; } = new List<TableClassRoom>();
     private bool dataLoaded = false;
+    [CascadingParameter(Name = "IdClass")]
+    public int IdClass { get; set; } = 1;
+    [CascadingParameter(Name = "IdClassRoom")]
+    public int IdClassRoom { get; set; }
+    [Inject]
+    protected ClassService _ClassService { get; set; }
+
+    private List<TableClassRoom> teacherServices { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        tableClassRooms = await _ClassService.GetTableClassRoomByIdClass(IdClass,IdClassRoom);
+        var validTuData = tableClassRooms.Where(x => x.DayTableclass == "M").ToList();
+        // var validTuData = tableClassRooms.Where(x => x.DayTableclass == "Tu").ToList();
+    }
     protected async override Task OnAfterRenderAsync(bool firstRender)
     {
         if (dataLoaded == false)

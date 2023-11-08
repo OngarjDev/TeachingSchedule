@@ -84,7 +84,9 @@
                         <div class="d-grid gap-2 col-6 mx-auto mt-2">
                             <Button Color="ButtonColor.Link" @onclick='() => ClearSelection("Room")'>ล้างการเลือก</Button>
                         </div>
-                    }else{
+                    }
+                    else
+                    {
                         <div class="dropdown w-100">
                             <button class="btn btn-light dropdown-toggle border border-black w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 ดูรายชื่อห้องเรียน
@@ -97,19 +99,36 @@
                             </ul>
                         </div>
                         <Button Class="w-100 mt-2" Color="ButtonColor.Primary" @onclick='() => OnShowModalClick("Room")'><Icon Name="IconName.PlusLg"></Icon> เพิ่มห้องเรียน</Button>
-                   }
+                    }
                 </CardBody>
             </Card>
         </div>
     </div>
     <div class="row mt-3">
-        <Button Class="w-100 mt-3" Color="ButtonColor.Success" @onclick="() => GenerateTable()">สร้างตารางสอน</Button>
+        <Button Disabled="DisabledGenerate_btn" Class="w-100 mt-3" Color="ButtonColor.Success" @onclick="() => GenerateTable()">สร้างตารางสอน</Button>
     </div>
 </div>
 <hr />
-<TableViewComponent />
+<Tabs EnableFadeEffect="true">
+@*     @for (int i = 1; i <= dataclass_db.NumberClass;i++){
+    <Tab IsActive="true">
+        <TitleTemplate>
+            <Icon Name="IconName.Easel2" /> ห้องเรียนที่ @i
+        </TitleTemplate>
+        <Content>
+            <p class="mt-3">This is the placeholder content for the <b>Home</b> tab.</p>
+        </Content>
+    </Tab>
+    } *@
+</Tabs>
 
+@* <CascadingValue Value="1" Name="IdClassRoom">
+    <CascadingValue Value="@Id" Name="IdClass">
+        <TableViewComponent />
+    </CascadingValue>
+</CascadingValue>
 
+ *@
 <Modal UseStaticBackdrop="true" Class="modal fade" @ref="modal" data-bs-focus="false" title="ฟอร์มเพิ่มข้อมูล" style="display:none;" IsScrollable="true">
     <BodyTemplate>
         @switch (FormType)
@@ -141,7 +160,7 @@
                     </div>
                     <div class="dropdown w-100">
                         <h5 class="text-center">วิชาเอกที่เลือก: @datasubject_db.FirstOrDefault(x => x.IdSubject == teacher.IdSubject)?.NameSubject</h5>
-                        <label class="form-label">เลือกวิชาเอกเฉพาะ (ไม่จำเป็นต้องกรอก)</label>
+                        <label class="form-label">เลือกวิชาเอกเฉพาะ</label>
 
                         <button class="btn btn-light dropdown-toggle border border-black w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             เลือกวิชาเอกสำหรับการสอน
@@ -187,14 +206,17 @@
     public List<Room> dataroom_db { get; set; } = new List<Room>();
     public List<Teacher> datateacher_db { get; set; } = new List<Teacher>();
     public List<Subject> datasubject_db { get; set; } = new List<Subject>();
+    public Class dataclass_db { get; set; } = new Class();
     //สำหรับ Object Form Add
     private Subject subject = new Subject();
     private Teacher teacher = new Teacher();
     private Room room = new Room();
     public string FormType { get; set; }
+    private bool DisabledGenerate_btn { get; set; }
 
     private async Task GenerateTable()
     {
+        DisabledGenerate_btn = true;
         await _ClassService.GenerateTable(Id);
     }
     public async Task OnAddRoom()
@@ -234,6 +256,7 @@
     {
         datasubject_db = await _SubjectService.GetSubjectByIdClass(Id);
         datateacher_db = await _TeacherService.GetTeacherByIdClass(Id);
+        dataclass_db = await _ClassService.GetClassByIdClass(Id);
         dataroom_db = await _RoomService.GetRoomByIdClass(Id);
         StateHasChanged();
     }

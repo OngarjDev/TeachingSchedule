@@ -17,6 +17,8 @@ public partial class TableClassRoom
 
     public int? IdTeacher { get; set; }
 
+    public int AmountSubject { get; set; }
+
     public bool BreaktimeTableclass { get; set; }
 
     public int IdClass { get; set; }
