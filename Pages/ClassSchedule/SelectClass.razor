@@ -18,10 +18,6 @@
                         <label class="form-label">ชื่อชั้นเรียน</label>
                         <InputText class="form-control" @bind-Value="@Class.NameClass" Placeholder="กรอกชื่อรายชั้นเรียนเช่น ป.6 ม.1" />
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">จำนวนห้องเรียน</label>
-                        <NumberInput class="form-control" @bind-Value="@Class.NumberClass" Min="1" Max="10" Placeholder="กรอกจำนวนห้องเรียน" />
-                    </div>
                     <Button Class="w-100" Type="ButtonType.Submit" Color="ButtonColor.Primary">สร้างชั้นเรียน</Button>
                 </EditForm>
                 break;
@@ -48,7 +44,6 @@
             <tr>
                 <th scope="row">@ClassData.IdClass</th>
                 <td>@ClassData.NameClass</td>
-                <td>@ClassData.NumberClass</td>
                 <td><Button Color="ButtonColor.Success" Class="w-100" @onclick='@(()=> Navigation.NavigateTo("/CreateTable/"+ClassData.IdClass))'>สร้างตารางใหม่</Button></td>
                 <td><Button Color="ButtonColor.Danger" Class="w-100" @onclick='() => OnShowModalClick("DeleteClass",ClassData.IdClass)'>ลบชั้นเรียน</Button></td>
             </tr>

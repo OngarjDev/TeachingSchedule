@@ -22,6 +22,4 @@ public partial class TableClassRoom
     public bool BreaktimeTableclass { get; set; }
 
     public int IdClass { get; set; }
-
-    public int NumberroomTableclass { get; set; }
 }

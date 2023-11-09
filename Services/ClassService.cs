@@ -11,7 +11,7 @@ namespace TeachingSchedule.Services
         private readonly TeacherService _Teacher;
         private readonly SubjectService _Subject;
         private readonly RoomService _Room;
-        public readonly List<string> Day = new List<string> { "M", "Tu", "W", "Th", "F" };
+        public readonly List<string> Day = new List<string> { "วันจันทร์", "วันอังคาร์", "วันพุธ", "วันพฤหัสบดี", "วันศุกร์" };
         public ClassService(TeachingScheduleDbContext dbContext, Blazored.LocalStorage.ILocalStorageService localStorage, TeacherService teacher, SubjectService subject, RoomService room)
         {
             _DbContext = dbContext;
@@ -49,25 +49,40 @@ namespace TeachingSchedule.Services
         {
             string PeriodJson = await _LocalStorage.GetItemAsync<string>("DefaultPeriod");
             List<PeriodClass> Period = JsonSerializer.Deserialize<List<PeriodClass>>(PeriodJson);
-            Class Class_Dbs = await GetClassByIdClass(IdClass);
             Random random = new Random();
-
-            for (int i = 1; i <= Class_Dbs.NumberClass; i++) ///ลูบตารางสอนตามห้องเรียน
+            List<Teacher> Teacher = await _Teacher.GetTeacherByIdClass(IdClass);
+            List<Subject> Subjects = await _Subject.GetSubjectByIdClass(IdClass);
+            List<Room> Room = await _Room.GetRoomByIdClass(IdClass);
+            Class Class_Db = await GetClassByIdClass(IdClass);
+            List<TableClassRoom> tableClassRoomsKeeps = new List<TableClassRoom>();
+            for (int i = 0; i <= Day.Count - 1; i++) ///ลูบตารางสอนตามวัน
             {
-                List<Teacher> Teacher = await _Teacher.GetTeacherByIdClass(IdClass);
-                List<Subject> Subjects = await _Subject.GetSubjectByIdClass(IdClass);
-                List<Room> Room = await _Room.GetRoomByIdClass(IdClass);
-                Class Class_Db = await GetClassByIdClass(IdClass);
-                List<ClassDay> ManyTableClass = new List<ClassDay>();
-                for (int k = 0; k <= Period.Count - 1; k++)///ลูปเวลาในแต่ละคาบ
+                Teacher = await _Teacher.GetTeacherByIdClass(IdClass);
+                Room = await _Room.GetRoomByIdClass(IdClass);
+                //bool status_study = false;///เช็คสถานะกรณีมีคาบติดกันแล้วมีพัก
+                int hours_study = 0;///ชั่วโมงต้องไม่เกินต่อวัน
+                //int total_study = 0;
+                //int keepid_study = 0;
+                //int id_study = 0;
+                //int position_subject = 0;
+                //bool status_study = false;
+                for (int k_Loop = 0; k_Loop <= Period.Count - 4; k_Loop++)///ลูปเวลาในแต่ละคาบ 
                 {
                     TableClassRoom tableClassRoom = new TableClassRoom();// ล้างค้าทุกครั้งเพื่อสร้างคาบใหม่ๆ
-                    tableClassRoom.NumberroomTableclass = i;
+                    if (Period[k_Loop].BreakTime == true)
+                    {
+                        tableClassRoom.BreaktimeTableclass = true; _DbContext.TableClassRooms.Add(tableClassRoom); continue;
+                    }
+                    //if (total_study > 0)
+                    //{
+                    //    tableClassRoom.IdSubject = id_study;
+                    //    total_study -= 1;
+                    //    if (total_study <= 0) { Subjects.RemoveAt(position_subject); }
+                    //}
+                    if (Subjects.Count == 0 || hours_study >= Period.Count - 1) { break; /* หยุดการทำงานของลูป*/}
                     tableClassRoom.DayTableclass = Day[i];
-                    if (Subjects.Count == 0) { break; /* หยุดการทำงานของลูป*/}
-                    tableClassRoom.IdtimePeriod = Period[k].Id;
+                    tableClassRoom.IdtimePeriod = Period[hours_study].Id;
                     tableClassRoom.IdClass = IdClass;
-                    if (Period[k].BreakTime == true) { tableClassRoom.BreaktimeTableclass = true; _DbContext.TableClassRooms.Add(tableClassRoom); continue; }
                     if (Room.Count() > 0)
                     {
                         int randomroom = random.Next(0, Room.Count());
@@ -82,15 +97,34 @@ namespace TeachingSchedule.Services
                     int randomsubject = random.Next(0, Subjects.Count());
                     if (Subjects[randomsubject].AmountSubject > 1)
                     {
-                        k += Subjects[randomsubject].AmountSubject ?? 1;
+                        hours_study += Subjects[randomsubject].AmountSubject ?? 1;
                         tableClassRoom.AmountSubject = Subjects[randomsubject].AmountSubject ?? 1;
-                        tableClassRoom.IdSubject = Subjects[randomsubject].IdSubject;
+                        if (hours_study + Subjects[randomsubject].AmountSubject >= Period.Count())
+                        {
+                            try
+                            {
+                                tableClassRoom.IdSubject = Subjects.Where(lp => lp.AmountSubject == 1).FirstOrDefault().IdSubject;
+                            }catch (Exception ex)
+                            {
+                                tableClassRoom.IdSubject = Subjects[0].IdSubject;
+                            }
+                        }
+                        else
+                        {
+                            tableClassRoom.IdSubject = Subjects[randomsubject].IdSubject;
+                        }
+                        //total_study = Subjects[randomsubject].AmountSubject - 1 ?? 1;
+                        //id_study = Subjects[randomsubject].IdSubject;
+                        //position_subject = randomsubject;
+                        Subjects.RemoveAt(randomsubject);
+                        
                     }
                     else
                     {
                         tableClassRoom.IdSubject = Subjects[randomsubject].IdSubject;
                         Subjects.RemoveAt(randomsubject);
                     }
+
                     ///ตรวจสอบว่า อาจารย์คนในมีวิชาเอกนี้บ้าง
                     tableClassRoom.IdTeacher = Teacher.Where(teacher => teacher.IdSubject == tableClassRoom.IdSubject)
                             .Select(teacher => teacher.IdTeacher)
@@ -98,15 +132,14 @@ namespace TeachingSchedule.Services
 
                     Teacher teacherToDelete = Teacher.FirstOrDefault(teacher => teacher.IdTeacher == tableClassRoom.IdTeacher);
                     Teacher.Remove(teacherToDelete);
-                    _DbContext.TableClassRooms.Add(tableClassRoom);
+                    tableClassRoomsKeeps.Add(tableClassRoom);
+
                 }
             }
+            string DataJson = JsonSerializer.Serialize(tableClassRoomsKeeps);
+            var Dbconnect = await _DbContext.Classes.Where(xe => xe.IdClass == IdClass).FirstAsync();
+            Dbconnect.ContentClass = DataJson;
             await _DbContext.SaveChangesAsync();
-        }
-        public Task<List<TableClassRoom>> GetTableClassRoomByIdClass(int IdClass,int IdClassroom)
-        {
-            using var context = new TeachingScheduleDbContext();
-                return context.TableClassRooms.OrderBy(xw => xw.NumberroomTableclass).AsNoTracking().Where(x => x.IdClass == IdClass && x.NumberroomTableclass==IdClassroom).ToListAsync();
         }
     }
 }

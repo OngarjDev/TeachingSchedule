@@ -69,12 +69,12 @@
 
     private List<TableClassRoom> teacherServices { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        tableClassRooms = await _ClassService.GetTableClassRoomByIdClass(IdClass,IdClassRoom);
-        var validTuData = tableClassRooms.Where(x => x.DayTableclass == "M").ToList();
-        // var validTuData = tableClassRooms.Where(x => x.DayTableclass == "Tu").ToList();
-    }
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     tableClassRooms = await _ClassService.GetTableClassRoomByIdClass(IdClass,IdClassRoom);
+    //     var validTuData = tableClassRooms.Where(x => x.DayTableclass == "M").ToList();
+    //     // var validTuData = tableClassRooms.Where(x => x.DayTableclass == "Tu").ToList();
+    // }
     protected async override Task OnAfterRenderAsync(bool firstRender)
     {
         if (dataLoaded == false)

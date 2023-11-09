@@ -45,7 +45,6 @@ public partial class TeachingScheduleDbContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("name_class");
-            entity.Property(e => e.NumberClass).HasColumnName("number_class");
         });
 
         modelBuilder.Entity<Room>(entity =>
@@ -105,7 +104,6 @@ public partial class TeachingScheduleDbContext : DbContext
             entity.Property(e => e.IdSubject).HasColumnName("id_subject");
             entity.Property(e => e.IdTeacher).HasColumnName("id_teacher");
             entity.Property(e => e.IdtimePeriod).HasColumnName("idtime_period");
-            entity.Property(e => e.NumberroomTableclass).HasColumnName("numberroom_tableclass");
         });
 
         modelBuilder.Entity<Teacher>(entity =>
